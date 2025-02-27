@@ -19,22 +19,25 @@ def load_mhd_dose(mhd_file_path):
     
     return dose_image_array
 
-def show_double_dose_slice(dose1, dose2, slice_num):
+def show_double_dose_slice(dose1, dose2, slice_num, cmap_1, cmap_2, alpha=0.5):
     """
     显示两个剂量分布的叠加切片。
     Args:
         dose1(numpy.ndarray): 第一个剂量分布。
         dose2(numpy.ndarray): 第二个剂量分布。
         slice_num(int): 切片索引, 显示当前要显示的切片。
+        cmap_1(str): 第一个剂量分布的colormap。
+        cmap_2(str): 第二个剂量分布的colormap。
+        alpha(float): 透明度, 默认值是0.5
     """
     fig, ax = plt.subplots(figsize=(6, 6), dpi=100)
-    ax.imshow(dose1[slice_num], cmap='jet', interpolation='none')
-    dose_img = ax.imshow(dose2[slice_num], cmap='jet', interpolation='none', alpha=0.5)
+    ax.imshow(dose1[slice_num], cmap=cmap_1, interpolation='none')
+    dose_img = ax.imshow(dose2[slice_num], cmap=cmap_2, interpolation='none', alpha=alpha)
 
     cbar = plt.colorbar(dose_img, ax=ax, fraction=0.046, pad=0.04)
     cbar.ax.tick_params(labelsize=10)
 
-    plt.title(f'MC Dose and Pb Dose at Slice {slice_num}', fontsize=14)
+    plt.title(f'Slice {slice_num}', fontsize=14)
     plt.axis('off')
     plt.show()
     
