@@ -14,11 +14,43 @@ some tools for 302
 
 上述结构，不清楚就找我
 
+或者可以放在workspace里
+
+比如
+
+|-workspace
+
+|--ToolsFor302
+
+|--Your Project1
+
+|---code
+
+|--Your Project2
+
+|---code
+
+这样，所有的项目都可以引用同一个ToolsFor302，不用在每个项目里都搞一份代码出来
+
+但是引用方式会变，参考下文
+
 ### 2.在代码中直接import
 
 添加`import ToolsFor302.Tools as t`  
 
-可以按需添加，可能会分为Tools，dose_engine... 
+
+
+如果是第二种方式使用 就需要添加三行代码
+
+`import sys`
+
+`sys.path.append("..")`
+
+`import ToolsFor302.Tools as t`
+
+
+
+也可以按需添加，以后可能会分为Tools，dose_engine... 
 
 (如果有的话就是 `import ToolsFor302.Dose_Engine` )
 
