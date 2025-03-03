@@ -152,7 +152,7 @@ def show_line_dose(dose1, dose2, x_start, x_end, y_idx, z_idx):
     dose2_slice   = dose2[z_idx]
 
     dose1_line   = dose1_slice[y_idx]
-    dose2_line   = dose1_slice[y_idx]
+    dose2_line   = dose2_slice[y_idx]
 
     x = np.arange(x_start, x_end)  
 
