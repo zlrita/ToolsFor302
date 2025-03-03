@@ -128,8 +128,10 @@ def show_range(dose1, dose2, x_idx, y_start, y_end, z_idx):
     x = np.arange(y_start, y_end)
     
     plt.figure(figsize=(10, 6))
-    plt.plot(x, dose1_slice[y_start:y_end,x_idx], label='Dose1')
-    plt.plot(x, dose2_slice[y_start:y_end,x_idx], label='Dose2')
+    # plt.plot(x, dose1_slice[y_start:y_end,x_idx], label='Dose1')
+    # plt.plot(x, dose2_slice[y_start:y_end,x_idx], label='Dose2')
+    plt.plot(x, np.sum(dose1_slice, axis=1)[y_start:y_end], label='Dose1', marker='o')
+    plt.plot(x, np.sum(dose2_slice, axis=1)[y_start:y_end], label='Dose2', marker='x')
     plt.xlabel('Y Index')
     plt.ylabel('Dose Value')
     plt.title(f'idd at z= {z_idx}, x={x_idx}, y={y_start} to {y_end}')
