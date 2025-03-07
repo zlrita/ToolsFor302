@@ -110,7 +110,7 @@ def show_single_slice_interactive(dose):
     interact(lambda slice_num: show_single_dose_slice(dose, slice_num, dose.min(), dose.max()),
          slice_num=IntSlider(min=0, max=num_slices - 1, step=1, value=num_slices // 2))
     
-def show_range(dose1, dose2, x_idx, y_start, y_end, z_idx):
+def show_range_in_line(dose1, dose2, x_idx, y_start, y_end, z_idx):
     """
     显示两个剂量分布的射程图。
     Args:
@@ -128,8 +128,33 @@ def show_range(dose1, dose2, x_idx, y_start, y_end, z_idx):
     x = np.arange(y_start, y_end)
     
     plt.figure(figsize=(10, 6))
-    # plt.plot(x, dose1_slice[y_start:y_end,x_idx], label='Dose1')
-    # plt.plot(x, dose2_slice[y_start:y_end,x_idx], label='Dose2')
+    plt.plot(x, dose1_slice[y_start:y_end,x_idx], label='Dose1', marker='o')
+    plt.plot(x, dose2_slice[y_start:y_end,x_idx], label='Dose2', marker='x')
+    plt.xlabel('Y Index')
+    plt.ylabel('Dose Value')
+    plt.title(f'idd at z= {z_idx}, x={x_idx}, y={y_start} to {y_end}')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    
+    def show_range_in_slice(dose1, dose2, y_start, y_end, z_idx):
+    """
+    显示两个剂量分布的射程图。
+    Args:
+        dose1(numpy.ndarray): 第一个剂量分布。
+        dose2(numpy.ndarray): 第二个剂量分布。
+        x_idx(int): 显示的x方向的索引。
+        y_start(int): 显示的y方向的起始索引。
+        y_end(int): 显示的y方向的结束索引。
+        z_idx(int): 显示的z方向的索引。
+    """
+    
+    dose1_slice = dose1[z_idx]
+    dose2_slice = dose2[z_idx]
+    
+    x = np.arange(y_start, y_end)
+    
+    plt.figure(figsize=(10, 6))
     plt.plot(x, np.sum(dose1_slice, axis=1)[y_start:y_end], label='Dose1', marker='o')
     plt.plot(x, np.sum(dose2_slice, axis=1)[y_start:y_end], label='Dose2', marker='x')
     plt.xlabel('Y Index')
