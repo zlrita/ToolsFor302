@@ -137,13 +137,12 @@ def show_range_in_line(dose1, dose2, x_idx, y_start, y_end, z_idx):
     plt.grid(True)
     plt.show()
     
-    def show_range_in_slice(dose1, dose2, y_start, y_end, z_idx):
+def show_range_in_slice(dose1, dose2, y_start, y_end, z_idx):
     """
     显示两个剂量分布的射程图。
     Args:
         dose1(numpy.ndarray): 第一个剂量分布。
         dose2(numpy.ndarray): 第二个剂量分布。
-        x_idx(int): 显示的x方向的索引。
         y_start(int): 显示的y方向的起始索引。
         y_end(int): 显示的y方向的结束索引。
         z_idx(int): 显示的z方向的索引。
@@ -159,7 +158,7 @@ def show_range_in_line(dose1, dose2, x_idx, y_start, y_end, z_idx):
     plt.plot(x, np.sum(dose2_slice, axis=1)[y_start:y_end], label='Dose2', marker='x')
     plt.xlabel('Y Index')
     plt.ylabel('Dose Value')
-    plt.title(f'idd at z= {z_idx}, x={x_idx}, y={y_start} to {y_end}')
+    plt.title(f'idd at z= {z_idx}, y={y_start} to {y_end}')
     plt.legend()
     plt.grid(True)
     plt.show()
@@ -207,7 +206,7 @@ def create_cubeMask(shape, edge_size, mask_value):
     
     return mask
 
-def cal_gamma(dose_ref, dose_eval, dose_threshold, distance_threshold, dose_cutoff, interp_fraction, ram_available):
+def show_gamma(dose_ref, dose_eval, dose_threshold, distance_threshold, dose_cutoff, interp_fraction, ram_available):
     """
     计算Gamma通过率
     Args:
@@ -273,3 +272,53 @@ def cal_gamma(dose_ref, dose_eval, dose_threshold, distance_threshold, dose_cuto
     )
 
     plt.show()
+    
+def cal_gamma(dose_ref, dose_eval, dose_threshold, distance_threshold, dose_cutoff, interp_fraction, ram_available):
+    """
+    计算Gamma通过率
+    Args:
+        dose_ref (numpy.ndarray): 第一个剂量分布。
+        dose_eval (numpy.ndarray): 第二个剂量分布。
+        dose_threshold (double): 剂量差异百分比阈值
+        distance_threshold (double): 空间距离阈值 (mm)
+        dose_cutoff (double): 剂量截断百分比
+        interp_fraction (int): 插值精度, 建议至少10
+        ram_available (int): 可用内存（单位字节）
+    """
+    z_ref = np.arange(dose_ref.shape[0])
+    y_ref = np.arange(dose_ref.shape[1])
+    x_ref = np.arange(dose_ref.shape[2])
+    axes_ref = (z_ref, y_ref, x_ref)
+
+    z_eval = np.arange(dose_eval.shape[0])
+    y_eval = np.arange(dose_eval.shape[1])
+    x_eval = np.arange(dose_eval.shape[2])
+    axes_eval = (z_eval, y_eval, x_eval)
+    
+    gamma_options = {
+    'dose_percent_threshold': dose_threshold,      
+    'distance_mm_threshold': distance_threshold,        
+    'lower_percent_dose_cutoff': dose_cutoff,    
+    'interp_fraction': interp_fraction,             
+    'max_gamma': 2,                     
+    'random_subset': None,
+    'local_gamma': True,
+    'ram_available': ram_available     
+    }
+
+    # 计算 gamma 指数，此处 axes 传入的是一维坐标轴元组
+    gamma = pymedphys.gamma(
+        axes_ref, dose_ref, 
+        axes_eval, dose_eval, 
+        **gamma_options
+    )
+    
+    # 过滤掉 NaN 值
+    valid_gamma = gamma[~np.isnan(gamma)]
+
+    num_bins = gamma_options['interp_fraction'] * gamma_options['max_gamma']
+    bins = np.linspace(0, gamma_options['max_gamma'], int(num_bins) + 1)
+
+    pass_ratio = np.sum(valid_gamma <= 1) / len(valid_gamma)
+    
+    return pass_ratio*100
